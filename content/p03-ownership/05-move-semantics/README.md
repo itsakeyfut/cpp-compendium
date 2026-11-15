@@ -108,7 +108,7 @@ take(std::move(name));      // OK：std::move で右辺値として扱う
 
 📄 [examples/move_only_type.cpp](examples/move_only_type.cpp)
 
-> **実務では手で書かない。** メンバを `std::unique_ptr<int[]>` や `std::vector<int>` にすれば、コンパイラが正しいムーブを自動で生成します。これを **Rule of Zero** と呼びます（[Rule of 0 / 3 / 5](../06-rule-of-zero-three-five/README.md)）。
+> **実務では手で書かない。** メンバを `std::unique_ptr<int[]>` や `std::vector<int>` にすれば、コンパイラが正しいムーブを自動で生成します。これを **Rule of Zero** と呼びます（[Rule of 0 / 3 / 5](../06-rule-of-zero-three-five/)）。
 
 ---
 
@@ -128,7 +128,7 @@ take(std::move(name));      // OK：std::move で右辺値として扱う
 
 ### 値カテゴリの正確な分類
 
-C++11以降、式は次の3つの基本カテゴリに分類されます（[値カテゴリ](../04-value-categories/README.md)で詳しく扱います）。
+C++11以降、式は次の3つの基本カテゴリに分類されます（[値カテゴリ](../04-value-categories/)で詳しく扱います）。
 
 | カテゴリ | 意味 | 例 |
 |---|---|---|
@@ -192,7 +192,7 @@ C++11以降、式は次の3つの基本カテゴリに分類されます（[値�
 | C++20 | 右辺値参照の引数を返す場合などにも拡大（P1825） |
 | C++23 | 規則を単純化し、さらに範囲を拡大（P2266） |
 
-コピー省略の詳細は[コピー省略とRVO](../11-copy-elision/README.md)で扱います。
+コピー省略の詳細は[コピー省略とRVO](../11-copy-elision/)で扱います。
 
 ### 標準ライブラリの型のムーブ後の状態
 
@@ -283,7 +283,7 @@ TArray<FString> Names = LoadNames();
 TArray<FString> Moved = MoveTemp(Names); // UEではこちらを使う
 ```
 
-`TArray` をはじめとするUEのコンテナも、標準ライブラリと同じくムーブに対応しています。大きな配列を関数間で受け渡すとき、ムーブを意識するかどうかで性能が大きく変わります。詳しくは [Part 12 UEのコンテナ](../../p12-unreal-cpp/06-containers/README.md)で扱います。
+`TArray` をはじめとするUEのコンテナも、標準ライブラリと同じくムーブに対応しています。大きな配列を関数間で受け渡すとき、ムーブを意識するかどうかで性能が大きく変わります。詳しくは [Part 12 UEのコンテナ](../../p12-unreal-cpp/06-containers/)で扱います。
 
 ### clang-tidy による機械的なチェック
 
@@ -378,9 +378,9 @@ std::string copied = std::move(name);
 ### このリポジトリ内
 
 - テスト：[tests/move_semantics_test.cpp](tests/move_semantics_test.cpp)
-- compile_fail：[compile_fail/](compile_fail/)
+- compile_fail：[copy_unique_ptr.cpp](compile_fail/copy_unique_ptr.cpp)、[copy_move_only_buffer.cpp](compile_fail/copy_move_only_buffer.cpp)、[bind_rvalue_ref_to_lvalue.cpp](compile_fail/bind_rvalue_ref_to_lvalue.cpp)
 - ベンチマーク：[bench/copy_vs_move.cpp](bench/copy_vs_move.cpp)
-- 関連する章：[値カテゴリ](../04-value-categories/README.md)、[Rule of 0 / 3 / 5](../06-rule-of-zero-three-five/README.md)、[例外安全性](../10-exception-safety/README.md)、[コピー省略とRVO](../11-copy-elision/README.md)、[完全転送](../12-perfect-forwarding/README.md)
+- 関連する章：[値カテゴリ](../04-value-categories/)、[Rule of 0 / 3 / 5](../06-rule-of-zero-three-five/)、[例外安全性](../10-exception-safety/)、[コピー省略とRVO](../11-copy-elision/)、[完全転送](../12-perfect-forwarding/)
 
 ### cppreference
 

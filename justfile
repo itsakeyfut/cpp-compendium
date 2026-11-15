@@ -7,6 +7,9 @@ devenv := if os() == "windows" { ". '" + justfile_directory() / "scripts" / "vsd
 # 既定のビルド構成 (debug / release / asan)
 config := "debug"
 
+# Python (Windows は python、それ以外は python3)
+python := if os() == "windows" { "python" } else { "python3" }
+
 # レシピ一覧を表示
 default:
     @just --list
@@ -42,3 +45,27 @@ clang cfg=config: (all "clang-cl-" + cfg)
 
 # MSVC と clang-cl の両方で 構成 → ビルド → テスト
 both cfg=config: (msvc cfg) (clang cfg)
+
+# ---------------------------------------------------------------------------
+# 目次・雛形・教科書
+# ---------------------------------------------------------------------------
+
+# TOC.md から目次・進捗・Part の README を更新する
+sync:
+    {{python}} scripts/compendium.py sync
+
+# 生成物が TOC.md と一致しているか確かめる (CI 用)
+sync-check:
+    {{python}} scripts/compendium.py sync --check
+
+# 章の雛形を作る: just new p03 06
+new part number:
+    {{python}} scripts/compendium.py new {{part}} {{number}}
+
+# 教科書をブラウザで読む (編集すると自動で再読み込み)
+book:
+    mdbook serve --open
+
+# 教科書を build/book に出力する
+book-build:
+    mdbook build

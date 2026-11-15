@@ -15,6 +15,10 @@ indent_size = 2
 # Markdownの行末スペース2つは改行の意味を持つため残す
 trim_trailing_whitespace = false
 
+[*.ps1]
+# Windows PowerShell 5.1 は BOM がないと UTF-8 のスクリプトを正しく読めない
+charset = utf-8-bom
+
 # Unreal Engineのコードは Epic の規約に合わせてタブを使う
 [ue/**.{h,cpp,cs}]
 indent_style = tab

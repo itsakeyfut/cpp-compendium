@@ -1,0 +1,22 @@
+[book]
+title = "cpp-compendium"
+description = "C++で一生食べていくための、動くコード付きリファレンス"
+authors = ["itsakeyfut"]
+language = "ja"
+src = "content"
+
+[build]
+build-dir = "build/book"
+# SUMMARY.md にあってファイルがない章を、勝手に作らない
+create-missing = false
+
+[output.html]
+git-repository-url = "https://github.com/itsakeyfut/cpp-compendium"
+edit-url-template = "https://github.com/itsakeyfut/cpp-compendium/edit/main/content/{path}"
+# 章番号は章タイトルに含めているので、mdBook の自動採番は使わない
+no-section-label = true
+
+[output.html.fold]
+# サイドバーの Part を折りたためるようにする
+enable = true
+level = 0

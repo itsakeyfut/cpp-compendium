@@ -11,21 +11,25 @@ C++の核心です。オブジェクトがいつ作られ、誰が所有し、�
 
 ## 章
 
+<!-- BEGIN chapters: scripts/compendium.py sync が自動生成するので手で編集しない -->
+
 | # | 章 | レベル | 状態 |
 |---|---|---|---|
-| 01 | [コンストラクタとデストラクタ](01-constructors-and-destructors/README.md) | ★★☆☆ | 未着手 |
-| 02 | [RAII](02-raii/README.md) | ★★☆☆ | 未着手 |
-| 03 | [コピー](03-copy-semantics/README.md) | ★★☆☆ | 未着手 |
-| 04 | [値カテゴリ](04-value-categories/README.md) | ★★★☆ | 未着手 |
-| 05 | [ムーブセマンティクス](05-move-semantics/README.md) | ★★★☆ | 下書き |
-| 06 | [Rule of 0 / 3 / 5](06-rule-of-zero-three-five/README.md) | ★★★☆ | 未着手 |
-| 07 | [スマートポインタ](07-smart-pointers/README.md) | ★★☆☆ | 未着手 |
-| 08 | [所有と借用の表現](08-ownership-design/README.md) | ★★★☆ | 未着手 |
-| 09 | [寿命と未定義動作](09-lifetime-and-ub/README.md) | ★★★☆ | 未着手 |
-| 10 | [例外安全性](10-exception-safety/README.md) | ★★★☆ | 未着手 |
-| 11 | [コピー省略とRVO](11-copy-elision/README.md) | ★★★☆ | 未着手 |
-| 12 | [完全転送](12-perfect-forwarding/README.md) | ★★★☆ | 未着手 |
-| 13 | [オブジェクトのメモリ配置](13-object-layout/README.md) | ★★★☆ | 未着手 |
+| 01 | コンストラクタとデストラクタ | ★★☆☆ 基礎 | 未着手 |
+| 02 | RAII | ★★☆☆ 基礎 | 未着手 |
+| 03 | コピー | ★★☆☆ 基礎 | 未着手 |
+| 04 | 値カテゴリ | ★★★☆ 実務 | 未着手 |
+| 05 | [ムーブセマンティクス](05-move-semantics/) | ★★★☆ 実務 | 下書き |
+| 06 | Rule of 0 / 3 / 5 | ★★★☆ 実務 | 未着手 |
+| 07 | スマートポインタ | ★★☆☆ 基礎 | 未着手 |
+| 08 | 所有と借用の表現 | ★★★☆ 実務 | 未着手 |
+| 09 | 寿命と未定義動作 | ★★★☆ 実務 | 未着手 |
+| 10 | 例外安全性 | ★★★☆ 実務 | 未着手 |
+| 11 | コピー省略とRVO | ★★★☆ 実務 | 未着手 |
+| 12 | 完全転送 | ★★★☆ 実務 | 未着手 |
+| 13 | オブジェクトのメモリ配置 | ★★★☆ 実務 | 未着手 |
+
+<!-- END chapters -->
 
 ## 実装課題
 

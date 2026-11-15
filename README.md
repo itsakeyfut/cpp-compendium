@@ -189,7 +189,11 @@ C++全般の学習に使える内容を目指しつつ、**Unreal Engineでの�
 - CMake（3.28以降）とNinja
 - GCC / Clang / MSVC のいずれか（C++20対応のもの）
 - vcpkg（環境変数 `VCPKG_ROOT` を設定しておく）
-- mdBook（手元で教科書をビルドする場合のみ）
+- [just](https://github.com/casey/just)（よく使うコマンドをまとめた `justfile` を実行する）
+- Python 3.9以降（目次や雛形を生成する `scripts/compendium.py` を実行する）
+- mdBook 0.5以降（手元で教科書を読む場合のみ）
+
+Windowsでは、普段は `just msvc` で構成・ビルド・テストをまとめて実行します。`justfile` が開発者用シェルの準備を自動で行います。
 
 ### ビルドとテスト
 
@@ -275,8 +279,10 @@ content/p03-ownership/
 ```
 
 - Partは `p00`〜`p12`、章はPartごとに `01` から番号を振ります。
-- 章を途中に差し込むときは、`tools/` の番号振り直しスクリプトを使い、ディレクトリ名・`SUMMARY.md`・本文中のリンクをまとめて更新します。
-- compile_failのファイルには、期待するエラーメッセージを先頭に書きます。失敗の理由まで照合し、タイポなど別の理由で失敗しても合格にならないようにします。
+- **目次の情報源は `TOC.md` だけ**です。`content/SUMMARY.md`・`content/STATUS.md`・各Partの `README.md` の章の表は、`just sync` で `TOC.md` から生成します。手で編集しません。
+- 新しい章を書き始めるときは `just new p03 06` で雛形（章テンプレートの `README.md` と `CMakeLists.txt`）を作ります。
+- 章を途中に差し込むときは、`TOC.md` の番号を振り直し、既存の章ディレクトリを `git mv` で改名してから `just sync` を実行します。
+- 本文から別の章へのリンクは `../06-rule-of-zero-three-five/` のようにディレクトリで書きます（`README.md` まで書くと、mdBookでリンク切れになるため）。
 
   ```cpp
   // EXPECT-ERROR(gcc,clang): use of deleted function
