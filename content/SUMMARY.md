@@ -11,7 +11,7 @@
 - [01 プログラムとは何か](p00-programming-intro/01-what-is-programming/README.md)
 - [02 開発環境とHello World](p00-programming-intro/02-hello-world/README.md)
 - [03 変数と型](p00-programming-intro/03-variables-and-types/README.md)
-- [04 入力と出力]()
+- [04 入力と出力](p00-programming-intro/04-input-output/README.md)
 - [05 条件分岐]()
 - [06 繰り返し]()
 - [07 関数]()
