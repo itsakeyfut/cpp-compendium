@@ -8,6 +8,12 @@
 #
 # 今のコンパイラ向けの EXPECT-ERROR があれば、その正規表現に一致するエラーで
 # 失敗したときだけ合格にする。タイポなど別の理由で失敗しても合格にならない。
+#
+# 注意:
+#   - 正規表現に「;」は書けない（CMake ではリストの区切りになり、パターンが分割される）。
+#     「;」に一致させたいときは「.」で代用する。
+#   - テストは LC_ALL=C で実行するので、GCC のメッセージは英語・ASCII の引用符（'）になる。
+#     （UTF-8 ロケールの GCC は ‘ ’ を使い、日本語ロケールではメッセージ自体が翻訳される）
 
 # 今のコンパイラを EXPECT-ERROR で使う名前（gcc / clang / msvc）に変換する
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -64,7 +70,9 @@ function(compendium_add_compile_fail name src)
     endif()
 
     # 同じビルドディレクトリで同時にビルドすると衝突するため、1つずつ実行する
+    # コンパイラのメッセージをロケールに左右されない形（英語・ASCII の引用符）にする
     set_tests_properties(${name} PROPERTIES
+        ENVIRONMENT "LC_ALL=C"
         RESOURCE_LOCK compendium_build_dir
         LABELS "compile_fail"
     )
