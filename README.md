@@ -273,6 +273,7 @@ content/p03-ownership/
 │   ├── README.md               # 本文（章テンプレートに従う。思い出しクイズもここ）
 │   ├── CMakeLists.txt          # compendium_chapter() を1行書くだけ
 │   ├── examples/               # 本文から埋め込むコード。1ファイル1トピック
+│   │                           #   <名前>.input を置くと、テスト時にその内容が入力として渡される
 │   ├── tests/                  # GoogleTestによるテスト
 │   ├── compile_fail/           # コンパイルが失敗することを確かめるコード
 │   ├── bench/                  # 性能を扱う章のみ。results/ に計測結果と環境を記録

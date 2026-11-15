@@ -9,6 +9,11 @@
 #   例: content/p03-ownership/05-move-semantics/examples/basic_move.cpp
 #       → p03_05_basic_move
 
+# コード例を実行するテスト用のスクリプトと、入力がないときに流し込む空のファイル
+set(COMPENDIUM_RUN_EXAMPLE "${CMAKE_CURRENT_LIST_DIR}/RunExample.cmake")
+set(COMPENDIUM_EMPTY_INPUT "${CMAKE_BINARY_DIR}/compendium_empty.input")
+file(WRITE "${COMPENDIUM_EMPTY_INPUT}" "")
+
 # 章のターゲットに共通の設定を付ける
 function(compendium_configure_target target)
     target_link_libraries(${target} PRIVATE compendium::warnings compendium::common)
@@ -32,14 +37,28 @@ function(compendium_chapter)
     # --------------------------------------------------------
     # examples/ : 1ファイル = 1実行ファイル
     #   正常終了すること（終了コード0）をテストとして登録する
+    #   examples/<名前>.input があれば、その内容を標準入力として流し込む
+    #   （ない場合は空の入力を流し込むので、入力待ちで止まることはない）
     # --------------------------------------------------------
     file(GLOB examples CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.cpp")
+    # .input を追加・削除したときにも構成し直されるよう、監視対象に加える
+    file(GLOB example_inputs CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.input")
     foreach(src IN LISTS examples)
         cmake_path(GET src STEM name)
         set(target "${prefix}_${name}")
         add_executable(${target} "${src}")
         compendium_configure_target(${target})
-        add_test(NAME ${target} COMMAND ${target})
+        set(input "${CMAKE_CURRENT_SOURCE_DIR}/examples/${name}.input")
+        if(NOT EXISTS "${input}")
+            set(input "${COMPENDIUM_EMPTY_INPUT}")
+        endif()
+        add_test(
+            NAME ${target}
+            COMMAND ${CMAKE_COMMAND}
+                -DEXAMPLE=$<TARGET_FILE:${target}>
+                -DINPUT=${input}
+                -P ${COMPENDIUM_RUN_EXAMPLE}
+        )
         set_tests_properties(${target} PROPERTIES LABELS "example")
     endforeach()
 
