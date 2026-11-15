@@ -33,6 +33,10 @@ test preset *args:
 # 構成 → ビルド → テスト
 all preset: (configure preset) (build preset) (test preset)
 
+# 特定のターゲットだけビルド: just target msvc-debug p00_02_cf_wrong_case
+target preset name:
+    @{{devenv}} echo '> cmake --build --preset {{preset}} --target {{name}}'; cmake --build --preset {{preset}} --target {{name}}
+
 # ---------------------------------------------------------------------------
 # コンパイラ別のショートカット
 # ---------------------------------------------------------------------------
