@@ -171,7 +171,7 @@ C++全般の学習に使える内容を目指しつつ、**Unreal Engineでの�
 | ベンチマーク | Google Benchmark |
 | 依存ライブラリ | vcpkg（マニフェストモード。`vcpkg.json` で管理） |
 | ドキュメント | mdBook（GitHub Pagesで公開） |
-| CI | GitHub Actions（3コンパイラでのビルド・テスト、Sanitizer、clang-tidy、ドキュメントのデプロイ） |
+| CI | GitHub Actions。`ci.yml`：GCC・Clang（ASan/UBSan含む）・MSVCでのビルドとテスト、clang-tidy、目次の整合性チェック。`docs.yml`：教科書のGitHub Pagesへの公開 |
 | Unreal Engine | 検証用プロジェクトを `ue/` に置く。UEが必要なためCIの対象外とし、手元でビルドして確認する |
 | 言語 | 本文・コードコメント・章タイトルは日本語。ディレクトリ名とファイル名は英数字 |
 
@@ -181,7 +181,7 @@ C++全般の学習に使える内容を目指しつつ、**Unreal Engineでの�
 
 教科書は2通りの方法で読めます。
 
-- **GitHub Pages**：ブラウザで読む（URLは公開後に記載）
+- **GitHub Pages**：<https://itsakeyfut.github.io/cpp-compendium/> でブラウザから読む
 - **このリポジトリ**：本文を読みながら、同じ場所にあるコードをビルドして実行する
 
 ### 必要なもの
@@ -205,8 +205,8 @@ cmake --preset clang-debug
 cmake --build --preset clang-debug
 ctest --preset clang-debug
 
-# 特定の章だけテストする（例：Part 3 の 02 章）
-ctest --preset clang-debug -R p03_02
+# 特定の章だけテストする（例：Part 3 の 05 章）
+ctest --preset clang-debug -R p03_05
 ```
 
 ### コード例を1つ実行する
@@ -214,15 +214,15 @@ ctest --preset clang-debug -R p03_02
 コード例の実行ファイルは `p{Part番号}_{章番号}_{ファイル名}` という名前で作られます。
 
 ```bash
-# content/p03-ownership/02-move-semantics/examples/basic_move.cpp を実行する
-cmake --build --preset clang-debug --target p03_02_basic_move
-./build/clang-debug/bin/p03_02_basic_move
+# content/p03-ownership/05-move-semantics/examples/basic_move.cpp を実行する
+cmake --build --preset clang-debug --target p03_05_basic_move
+./build/clang-debug/bin/p03_05_basic_move
 ```
 
 ### 教科書を手元で読む
 
 ```bash
-mdbook serve --open
+just book   # mdbook serve --open と同じ。編集すると自動で再読み込みされる
 ```
 
 ---
@@ -234,7 +234,9 @@ cpp-compendium/
 ├── README.md
 ├── LICENSE-MIT
 ├── LICENSE-CC-BY-4.0
+├── TOC.md                      # 目次の唯一の情報源（just sync で各所に反映）
 ├── WRITING_GUIDE.md            # 書き方のルール（文体、用語、章テンプレート）
+├── justfile                    # よく使うコマンド（just --list で一覧）
 ├── book.toml                   # mdBookの設定（src = "content"）
 ├── CMakeLists.txt
 ├── CMakePresets.json
@@ -257,7 +259,7 @@ cpp-compendium/
 ├── cmake/                      # 共通のCMake関数（章の登録、compile_fail、Sanitizer、警告）
 ├── common/                     # テストとベンチの共通ヘルパー
 ├── tools/                      # 章の雛形生成、番号の振り直し、STATUS.md生成などのスクリプト
-└── .github/workflows/          # CI（ビルド・テスト、Sanitizer、ドキュメントのデプロイ）
+└── .github/workflows/          # ci.yml（ビルド・テスト・clang-tidy・目次チェック）、docs.yml（教科書の公開）
 ```
 
 ### Partと章

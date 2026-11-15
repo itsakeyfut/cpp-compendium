@@ -1,0 +1,61 @@
+# 教科書（mdBook）をビルドして GitHub Pages に公開する
+#
+# 事前に、リポジトリの Settings → Pages → Build and deployment の
+# Source を「GitHub Actions」にしておく必要がある。
+
+name: Docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 公開は1つずつ行う（実行中の公開は止めない）
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+env:
+  MDBOOK_VERSION: "0.5.4"
+
+jobs:
+  build:
+    name: ビルド
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: mdBook を用意する
+        run: |
+          url="https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          mkdir -p "$RUNNER_TEMP/mdbook"
+          curl -sSL "$url" | tar -xz -C "$RUNNER_TEMP/mdbook"
+          echo "$RUNNER_TEMP/mdbook" >> "$GITHUB_PATH"
+
+      - name: 目次が最新か確かめる
+        run: python3 scripts/compendium.py sync --check
+
+      - name: 教科書をビルドする
+        run: mdbook build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/book
+
+  deploy:
+    name: 公開
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

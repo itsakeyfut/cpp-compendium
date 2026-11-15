@@ -12,6 +12,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# C++20 モジュールはまだ使わないので、モジュールの依存スキャンを止める
+# （有効のままだと、ビルド前の clang-tidy が存在しない .modmap を探して失敗する）
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 # 実行ファイルはすべて build/<presets>/bin/ に集める
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

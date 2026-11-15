@@ -1,0 +1,130 @@
+# ビルド・テスト・静的解析・目次の整合性チェック
+#
+# push と pull request のたびに、GCC / Clang / MSVC でビルドとテストを行う。
+# ベンチマークはビルドだけを確認する（共有マシンでは計測値が安定しないため）。
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# 同じブランチで新しい push があったら、古い実行を止める
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ----------------------------------------------------------------------------
+  # TOC.md と生成物（SUMMARY.md など）が一致しているか
+  # ----------------------------------------------------------------------------
+  sync-check:
+    name: 目次の整合性
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: just sync の実行漏れがないか確かめる
+        run: python3 scripts/compendium.py sync --check
+
+  # ----------------------------------------------------------------------------
+  # 3つのコンパイラでビルドとテスト
+  # ----------------------------------------------------------------------------
+  build:
+    name: ${{ matrix.preset }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-24.04, preset: gcc-debug }
+          - { os: ubuntu-24.04, preset: clang-debug }
+          - { os: ubuntu-24.04, preset: clang-asan }
+          - { os: windows-latest, preset: msvc-debug }
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: CMake と Ninja を用意する
+        uses: lukka/get-cmake@latest
+
+      - name: Clang の Sanitizer ランタイムを入れる
+        if: matrix.preset == 'clang-asan'
+        run: sudo apt-get update && sudo apt-get install -y libclang-rt-18-dev
+
+      - name: MSVC の開発者環境に入る
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: vcpkg を用意する
+        shell: bash
+        run: |
+          # builtin-baseline のコミットを解決できるよう、履歴ごと（中身は必要な分だけ）取得する
+          git clone --filter=blob:none https://github.com/microsoft/vcpkg.git "$RUNNER_TEMP/vcpkg"
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.bat" -disableMetrics
+          else
+            "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+          fi
+          echo "VCPKG_ROOT=$RUNNER_TEMP/vcpkg" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/vcpkg-cache"
+          echo "VCPKG_DEFAULT_BINARY_CACHE=$RUNNER_TEMP/vcpkg-cache" >> "$GITHUB_ENV"
+
+      - name: vcpkg のビルド済みパッケージをキャッシュする
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/vcpkg-cache
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      - name: 構成
+        run: cmake --preset ${{ matrix.preset }}
+
+      - name: ビルド
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      - name: テスト
+        run: ctest --preset ${{ matrix.preset }}
+
+  # ----------------------------------------------------------------------------
+  # clang-tidy（警告が1つでもあれば失敗）
+  # ----------------------------------------------------------------------------
+  clang-tidy:
+    name: clang-tidy
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: CMake と Ninja を用意する
+        uses: lukka/get-cmake@latest
+
+      - name: vcpkg を用意する
+        run: |
+          git clone --filter=blob:none https://github.com/microsoft/vcpkg.git "$RUNNER_TEMP/vcpkg"
+          "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+          echo "VCPKG_ROOT=$RUNNER_TEMP/vcpkg" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/vcpkg-cache"
+          echo "VCPKG_DEFAULT_BINARY_CACHE=$RUNNER_TEMP/vcpkg-cache" >> "$GITHUB_ENV"
+
+      - name: vcpkg のビルド済みパッケージをキャッシュする
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/vcpkg-cache
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      - name: 構成（compile_commands.json を作る）
+        run: cmake --preset clang-debug
+
+      - name: clang-tidy を実行する
+        run: |
+          # compile_fail はコンパイルできないのが正しいので対象外にする
+          find content -path '*/compile_fail' -prune -o -name '*.cpp' -print \
+            | xargs --no-run-if-empty clang-tidy -p build/clang-debug --warnings-as-errors='*' --quiet

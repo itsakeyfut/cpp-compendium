@@ -1,11 +1,15 @@
 ---
 # コード例はわざと問題のある書き方を示すことがある。
 # その場合は該当行に NOLINT(チェック名) を付け、理由をコメントで書く。
+#
+# clang-analyzer-deadcode.DeadStores は、Google Benchmark の定型句
+# for (auto _ : state) を誤検出するため無効にしている。
 Checks: >
   -*,
   bugprone-*,
   -bugprone-easily-swappable-parameters,
   clang-analyzer-*,
+  -clang-analyzer-deadcode.DeadStores,
   modernize-*,
   -modernize-use-trailing-return-type,
   performance-*,
