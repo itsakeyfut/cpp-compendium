@@ -1,0 +1,10 @@
+# テキストファイルは改行をLFに統一する
+* text=auto eol=lf
+
+# Windows専用のファイルはCRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Unreal Engineのバイナリアセット
+*.uasset filter=lfs diff=lfs merge=lfs -text
+*.umap   filter=lfs diff=lfs merge=lfs -text

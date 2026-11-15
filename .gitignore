@@ -1,0 +1,29 @@
+# ビルド成果物
+/build/
+/out/
+
+# エディタ・IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# clangd
+.cache/
+compile_commands.json
+
+# vcpkg（マニフェストモードでプロジェクト内に作られる場合）
+/vcpkg_installed/
+
+# Unreal Engine（ue/ 以下のプロジェクト）
+ue/**/Binaries/
+ue/**/Intermediate/
+ue/**/Saved/
+ue/**/DerivedDataCache/
+ue/**/Build/
+ue/**/.vs/
+ue/**/*.sln
+ue/**/*.suo
+ue/**/*.VC.db
+ue/**/*.VC.opendb

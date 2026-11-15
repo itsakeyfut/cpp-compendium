@@ -1,0 +1,18 @@
+---
+# コード例はわざと問題のある書き方を示すことがある。
+# その場合は該当行に NOLINT(チェック名) を付け、理由をコメントで書く。
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  clang-analyzer-*,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  performance-*,
+  readability-container-size-empty,
+  readability-make-member-function-const,
+  readability-redundant-*
+WarningsAsErrors: ''
+HeaderFilterRegex: '(common|content)/.*'
+FormatStyle: file
+---
