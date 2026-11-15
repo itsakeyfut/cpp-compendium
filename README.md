@@ -167,9 +167,124 @@ C++全般の学習に使える内容を目指しつつ、**Unreal Engineでの�
 | 基準とするC++ | **C++20**。C++23以降の機能は、章や項目にバージョンのバッジを付けて扱う |
 | コンパイラ | GCC / Clang / MSVC（いずれも最新の安定版） |
 | ビルド | CMake（CMakePresetsを使用） |
+| テスト | GoogleTest |
+| ベンチマーク | Google Benchmark |
+| 依存ライブラリ | vcpkg（マニフェストモード。`vcpkg.json` で管理） |
 | ドキュメント | mdBook（GitHub Pagesで公開） |
 | CI | GitHub Actions（3コンパイラでのビルド・テスト、Sanitizer、clang-tidy、ドキュメントのデプロイ） |
+| Unreal Engine | 検証用プロジェクトを `ue/` に置く。UEが必要なためCIの対象外とし、手元でビルドして確認する |
 | 言語 | 本文・コードコメント・章タイトルは日本語。ディレクトリ名とファイル名は英数字 |
+
+---
+
+## 使い方
+
+教科書は2通りの方法で読めます。
+
+- **GitHub Pages**：ブラウザで読む（URLは公開後に記載）
+- **このリポジトリ**：本文を読みながら、同じ場所にあるコードをビルドして実行する
+
+### 必要なもの
+
+- CMake（3.28以降）とNinja
+- GCC / Clang / MSVC のいずれか（C++20対応のもの）
+- vcpkg（環境変数 `VCPKG_ROOT` を設定しておく）
+- mdBook（手元で教科書をビルドする場合のみ）
+
+### ビルドとテスト
+
+```bash
+# 構成（プリセット名は gcc-debug / clang-debug / msvc-debug / clang-asan など）
+cmake --preset clang-debug
+
+# 全章をビルドしてテストを実行する
+cmake --build --preset clang-debug
+ctest --preset clang-debug
+
+# 特定の章だけテストする（例：Part 3 の 02 章）
+ctest --preset clang-debug -R p03_02
+```
+
+### コード例を1つ実行する
+
+コード例の実行ファイルは `p{Part番号}_{章番号}_{ファイル名}` という名前で作られます。
+
+```bash
+# content/p03-ownership/02-move-semantics/examples/basic_move.cpp を実行する
+cmake --build --preset clang-debug --target p03_02_basic_move
+./build/clang-debug/bin/p03_02_basic_move
+```
+
+### 教科書を手元で読む
+
+```bash
+mdbook serve --open
+```
+
+---
+
+## ディレクトリ構成
+
+```
+cpp-compendium/
+├── README.md
+├── LICENSE-MIT
+├── LICENSE-CC-BY-4.0
+├── WRITING_GUIDE.md            # 書き方のルール（文体、用語、章テンプレート）
+├── book.toml                   # mdBookの設定（src = "content"）
+├── CMakeLists.txt
+├── CMakePresets.json
+├── vcpkg.json
+├── .clang-format / .clang-tidy / .editorconfig
+│
+├── content/                    # 本文とコード（mdBookのsrc）
+│   ├── SUMMARY.md              # 目次
+│   ├── introduction.md
+│   ├── STATUS.md               # 全章の進捗表（スクリプトで自動生成）
+│   ├── p00-programming-intro/
+│   ├── p01-toolchain/
+│   ├── ...
+│   ├── p12-unreal-cpp/
+│   └── appendix/               # 早見表、UB一覧、用語集、Rust対照表、レビュー観点
+│
+├── ue/                         # Unreal Engineの検証用プロジェクト（CI対象外）
+│   └── CompendiumLab/
+│
+├── cmake/                      # 共通のCMake関数（章の登録、compile_fail、Sanitizer、警告）
+├── common/                     # テストとベンチの共通ヘルパー
+├── tools/                      # 章の雛形生成、番号の振り直し、STATUS.md生成などのスクリプト
+└── .github/workflows/          # CI（ビルド・テスト、Sanitizer、ドキュメントのデプロイ）
+```
+
+### Partと章
+
+```
+content/p03-ownership/
+├── README.md                   # Partの概要、到達目標、章の一覧
+├── exercises.md                # 実装課題（課題文のみ）
+├── 01-raii/
+├── 02-move-semantics/
+│   ├── README.md               # 本文（章テンプレートに従う。思い出しクイズもここ）
+│   ├── CMakeLists.txt          # compendium_chapter() を1行書くだけ
+│   ├── examples/               # 本文から埋め込むコード。1ファイル1トピック
+│   ├── tests/                  # GoogleTestによるテスト
+│   ├── compile_fail/           # コンパイルが失敗することを確かめるコード
+│   ├── bench/                  # 性能を扱う章のみ。results/ に計測結果と環境を記録
+│   └── asm/                    # 本文で解説するアセンブリの記録（必要な章のみ）
+└── 03-smart-pointers/
+```
+
+- Partは `p00`〜`p12`、章はPartごとに `01` から番号を振ります。
+- 章を途中に差し込むときは、`tools/` の番号振り直しスクリプトを使い、ディレクトリ名・`SUMMARY.md`・本文中のリンクをまとめて更新します。
+- compile_failのファイルには、期待するエラーメッセージを先頭に書きます。失敗の理由まで照合し、タイポなど別の理由で失敗しても合格にならないようにします。
+
+  ```cpp
+  // EXPECT-ERROR(gcc,clang): use of deleted function
+  // EXPECT-ERROR(msvc): attempting to reference a deleted function
+  ```
+
+- ベンチマークは、CIではビルドが通ることだけを確認します。計測は手元で行い、CPU・コンパイラ・オプションと一緒に `results/` に記録します。
+- Part 10の意図的に脆弱なサンプルは、`COMPENDIUM_BUILD_VULNERABLE=ON` のときだけビルドします。
 
 ---
 
