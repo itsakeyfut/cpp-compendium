@@ -4,7 +4,7 @@
 
 | Part | 章数 | 完成 | 下書き | 未着手 |
 |---|---|---|---|---|
-| [Part 0　プログラミング入門](p00-programming-intro/) | 11 | 0 | 0 | 11 |
+| [Part 0　プログラミング入門](p00-programming-intro/) | 11 | 0 | 1 | 10 |
 | [Part 1　ツールチェーンとビルド](p01-toolchain/) | 13 | 0 | 0 | 13 |
 | [Part 2　言語の基礎](p02-language-basics/) | 15 | 0 | 0 | 15 |
 | [Part 3　オブジェクトと所有権](p03-ownership/) | 13 | 0 | 1 | 12 |
@@ -18,8 +18,9 @@
 | [Part 11　大規模開発](p11-large-scale/) | 14 | 0 | 0 | 14 |
 | [Part 12　Unreal Engine C++](p12-unreal-cpp/) | 18 | 0 | 0 | 18 |
 | [付録](appendix/) | 9 | 0 | 0 | 9 |
-| **合計** | **194** | **0** | **1** | **193** |
+| **合計** | **194** | **0** | **2** | **192** |
 
 ## 下書きの章
 
+- [Part 0　プログラミング入門 / 01 プログラムとは何か](p00-programming-intro/01-what-is-programming/)
 - [Part 3　オブジェクトと所有権 / 05 ムーブセマンティクス](p03-ownership/05-move-semantics/)

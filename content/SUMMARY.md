@@ -8,7 +8,7 @@
 # Part 0　プログラミング入門
 
 - [概要](p00-programming-intro/README.md)
-- [01 プログラムとは何か]()
+- [01 プログラムとは何か](p00-programming-intro/01-what-is-programming/README.md)
 - [02 開発環境とHello World]()
 - [03 変数と型]()
 - [04 入力と出力]()
