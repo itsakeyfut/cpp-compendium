@@ -3,6 +3,10 @@
 #   - VCPKG_ROOT が実在しないパスなら、ユーザー/マシン環境変数の値で補う
 
 $ErrorActionPreference = 'Stop'
+# MSVC のメッセージを英語に固定する
+# 　- Ninja が /showIncludes の出力（ヘッダの依存関係）を確実に読み取れるようにする
+# 　- エラーメッセージをそのまま検索しやすくする
+$env:VSLANG = '1033'
 
 # --- VCPKG_ROOT -------------------------------------------------------------
 if (-not $env:VCPKG_ROOT -or -not (Test-Path $env:VCPKG_ROOT)) {
